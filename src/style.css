@@ -1,0 +1,29 @@
+header{
+    height: 100%;
+    background-color: rgb(255, 110, 85);
+    color: white
+}
+
+header h1{
+    padding: 30px 0px 30px 0;
+}
+
+.profile-card{
+    height: 100%;
+    width: 100%;
+    border:gray;
+}
+
+.profile-name-role{
+    background-color: rgb(75, 174, 250);
+    color: white;
+}
+
+.profile-other-info{
+    background-color: rgb(242, 242, 242);
+    color: gray;
+}
+
+.profile-other-info p{
+    margin-bottom: 0;
+}

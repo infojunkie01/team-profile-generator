@@ -1,0 +1,22 @@
+{
+  "name": "team-profile-generator",
+  "version": "1.0.0",
+  "description": "week 10",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/infojunkie01/team-profile-generator.git"
+  },
+  "author": "infojunkie01",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/infojunkie01/team-profile-generator/issues"
+  },
+  "homepage": "https://github.com/infojunkie01/team-profile-generator#readme",
+  "devDependencies": {
+    "jest": "^28.1.0"
+  }
+}
