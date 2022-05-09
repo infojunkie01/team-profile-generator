@@ -4,11 +4,12 @@ const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
 
+
 const profilesData = [];
 const profilesHtml = [];
 
-const enterProfile = (role) => {
 
+const enterProfile = (role) => {
     if (role == "Manager") {
         otherInfo = {
             name: 'officeNumber',
@@ -44,7 +45,6 @@ const enterProfile = (role) => {
     },
         otherInfo
     ]).then((answers) => {
-        console.log(role)
         if (role == "Manager") {
             newProfile = new Manager(answers.name, answers.id, answers.email, answers.officeNumber);
             profilesData.push(newProfile);
@@ -55,7 +55,6 @@ const enterProfile = (role) => {
             newProfile = new Engineer(answers.name, answers.id, answers.email, answers.github);
             profilesData.push(newProfile);
             profilesHtml.push(addGeneralProfileHtml(newProfile))
-            console.log(profilesHtml)
             askAddMember()
         } else if (role == "Intern") {
             newProfile = new Intern(answers.name, answers.id, answers.email, answers.school);
@@ -68,6 +67,7 @@ const enterProfile = (role) => {
     })
 }
 
+// Asks user if they want to add another member that's an engineer or intern
 function askAddMember() {
     inquirer.prompt([{
         name: 'addProfileResponse',
@@ -79,17 +79,18 @@ function askAddMember() {
             if (answer.addProfileResponse == 'Engineer' || answer.addProfileResponse == 'Intern') {
                 enterProfile(answer.addProfileResponse)
             } else {
-                console.log("You've entered in all team member profiles. See index.html for generated.")
+                console.log("You've entered in all team member profiles.")
                 createHtml(profilesHtml);
             }
         })
 }
 
+// Function to create html code for each profile
 addGeneralProfileHtml = profile => {
     const name = profile.getName();
-        const role = profile.getRole();
-        const id = profile.getId();
-        const email = profile.getEmail();
+    const role = profile.getRole();
+    const id = profile.getId();
+    const email = profile.getEmail();
 
     if (profile instanceof Manager) {
         const officeNumber = profile.getOfficeNumber();
@@ -116,6 +117,7 @@ addGeneralProfileHtml = profile => {
   `;
 }
 
+// Function to create base html code
 baseHtml = profilesHtml => {
     return `
     <!DOCTYPE html>
@@ -147,16 +149,15 @@ baseHtml = profilesHtml => {
     `;
 };
 
-
-
+// Function to write html page
 createHtml = profilesHtml => {
     const pageHTML = baseHtml(profilesHtml);
-    fs.writeFile('./src/index.html', pageHTML, err => {
+    fs.writeFile('./dist/index.html', pageHTML, err => {
         if (err) throw new Error(err);
-        console.log('Page created! Check out index.html in the src directory to see it!');
+        console.log('Page created! Check out index.html in the dist directory to see it!');
     });
 }
 
-
+// Runs code to ask for user input. Starts with asking user to input manager info, then options to input other employee info follows
 enterProfile("Manager")
 
