@@ -1,118 +1,162 @@
 const fs = require('fs');
 const inquirer = require('inquirer');
-const generatePage = require('./src/page-template');
+const Manager = require("./lib/Manager");
+const Engineer = require("./lib/Engineer");
+const Intern = require("./lib/Intern");
 
-profilesData = [];
+const profilesData = [];
+const profilesHtml = [];
 
-const enterProfile = (value) => {
-    console.log(value)
+const enterProfile = (role) => {
 
-    if (value == 'Engineer'){
-            return inquirer.prompt([{
-        name: 'name',
-        type: 'input',
-        message: `${value}'s name`,
-    }, {
-        name: 'id',
-        type: 'input',
-        message: `${value}'s employee ID`
-    }, {
-        name: 'email',
-        type: 'input',
-        message: `${value}'s email address`
-    }, {
-        name: 'github',
-        type: 'input',
-        message: `${value}'s github username`
-    },{
-        name: 'office',
-        type: 'input',
-        message: `${value}'s office number`
-    }, {
-        name: 'addProfileResponse',
-        type: 'list', 
-        message: "Would you like to add a profile for and engineer or intern?",
-        choices: ['Engineer', 'Intern', 'No, exit application'],
-    }])
-    .then((answers) => {
-        answers.role = value;
-        profilesData.push(answers)
-        //console.log(`\nMy age is ${answers.age} and I live in ${answers.country}.\n`);
-        if (answers.addProfileResponse === 'Engineer') {
-            console.log(`You've entered info for ${answers.name}. Now enter the next profile information.`)
-            return enterProfile('Engineer');
-        } else if (answers.addProfileResponse === 'Intern') {
-            console.log(`You've entered info for ${answers.name}. Now enter the next profile information.`)
-            return enterProfile('Intern');
-        } else {
-            console.log(`You've entered info for ${answers.name}.`)
+    if (role == "Manager") {
+        otherInfo = {
+            name: 'officeNumber',
+            type: 'input',
+            message: `${role}'s office number`
         }
-    })
-    
-
-    } else{
-
+    } else if (role == "Engineer") {
+        otherInfo = {
+            name: 'github',
+            type: 'input',
+            message: `${role}'s Github username`
+        }
+    } else if (role == "Intern") {
+        otherInfo = {
+            name: 'school',
+            type: 'input',
+            message: `${role}'s school name`
+        }
+    } else {
+    }
     return inquirer.prompt([{
         name: 'name',
         type: 'input',
-        message: `${value}'s name`,
+        message: `${role}'s name`,
     }, {
         name: 'id',
         type: 'input',
-        message: `${value}'s employee ID`
+        message: `${role}'s employee ID`
     }, {
         name: 'email',
         type: 'input',
-        message: `${value}'s email address`
-    }, {
-        name: 'office',
-        type: 'input',
-        message: `${value}'s office number`
-    }, {
-        name: 'addProfileResponse',
-        type: 'list', 
-        message: "Would you like to add a profile for and engineer or intern?",
-        choices: ['Engineer', 'Intern', 'No, exit application'],
-    }])
-    .then((answers) => {
-        answers.role = value;
-        profilesData.push(answers)
-        //console.log(`\nMy age is ${answers.age} and I live in ${answers.country}.\n`);
-        if (answers.addProfileResponse === 'Engineer') {
-            console.log(`You've entered info for ${answers.name}. Now enter the next profile information.`)
-            return enterProfile('Engineer');
-        } else if (answers.addProfileResponse === 'Intern') {
-            console.log(`You've entered info for ${answers.name}. Now enter the next profile information.`)
-            return enterProfile('Intern');
+        message: `${role}'s email address`
+    },
+        otherInfo
+    ]).then((answers) => {
+        console.log(role)
+        if (role == "Manager") {
+            newProfile = new Manager(answers.name, answers.id, answers.email, answers.officeNumber);
+            profilesData.push(newProfile);
+            profilesHtml.push(addGeneralProfileHtml(newProfile))
+            askAddMember()
+
+        } else if (role == "Engineer") {
+            newProfile = new Engineer(answers.name, answers.id, answers.email, answers.github);
+            profilesData.push(newProfile);
+            profilesHtml.push(addGeneralProfileHtml(newProfile))
+            console.log(profilesHtml)
+            askAddMember()
+        } else if (role == "Intern") {
+            newProfile = new Intern(answers.name, answers.id, answers.email, answers.school);
+            profilesData.push(newProfile);
+            profilesHtml.push(addGeneralProfileHtml(newProfile))
+            askAddMember()
         } else {
-            console.log(`You've entered info for ${answers.name}.`)
+
         }
     })
-    }
 }
 
-enterProfile("Manager")
-    .then(profilesData => {
-    const pageHTML = generatePage(profilesData);
+function askAddMember() {
+    inquirer.prompt([{
+        name: 'addProfileResponse',
+        type: 'list',
+        message: "Would you like to add another profile for an engineer or intern?",
+        choices: ['Engineer', 'Intern', 'No, exit application'],
+    }])
+        .then((answer) => {
+            if (answer.addProfileResponse == 'Engineer' || answer.addProfileResponse == 'Intern') {
+                enterProfile(answer.addProfileResponse)
+            } else {
+                console.log("You've entered in all team member profiles. See index.html for generated.")
+                createHtml(profilesHtml);
+            }
+        })
+}
+
+addGeneralProfileHtml = profile => {
+    const name = profile.getName();
+        const role = profile.getRole();
+        const id = profile.getId();
+        const email = profile.getEmail();
+
+    if (profile instanceof Manager) {
+        const officeNumber = profile.getOfficeNumber();
+        html = `<p class="bg-white p-2 border border-light">Office #: ${officeNumber}</p>`
+    } else if (profile instanceof Engineer) {
+        const github = profile.getGithub();
+        html = `<p class="bg-white p-2 border border-light">Github: <a href = "https://github.com/${github}">${github}</a></p>`
+    } else if (profile instanceof Intern) {
+        const school = profile.getSchool();
+        html = `<p class="bg-white p-2 border border-light">School: ${school}</p>`
+    } else {
+    }
+    return `
+    <div class="profile-card shadow-sm mb-4">
+      <div class="profile-name-role p-3">
+        <h4 class="mb-0">${name}, <span class="font-weight-light">${role}</span></h4>
+      </div>
+      <div class="profile-other-info p-3">
+        <p class="bg-white p-2 border border-light">ID: ${id}</p>
+        <p class="bg-white p-2 border border-light">Email: <a href = "mailto: ${email}">${email}</a></p>
+        ${html}
+      </div>
+    </div>
+  `;
+}
+
+baseHtml = profilesHtml => {
+    return `
+    <!DOCTYPE html>
+    <html lang="en">
+    
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <title>Team Portfolio</title>
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css">
+      <link rel="stylesheet" href="./style.css">
+    </head>
+    
+    <body>
+      <header class="text-center">
+          <h1 class="">My Team</h1>
+      </header>
+  
+      <main class="container my-5">
+          <section class="my-3" id="profile-section">
+            ${profilesHtml.join('')}
+          </section>  
+      </main>
+  
+    </body>
+    </html>
+    `;
+};
+
+
+
+createHtml = profilesHtml => {
+    const pageHTML = baseHtml(profilesHtml);
     fs.writeFile('./src/index.html', pageHTML, err => {
         if (err) throw new Error(err);
         console.log('Page created! Check out index.html in the src directory to see it!');
     });
-    });
+}
 
 
+enterProfile("Manager")
 
-// GIVEN a command-line application that accepts user input
-// WHEN I am prompted for my team members and their information
-// THEN an HTML file is generated that displays a nicely formatted team roster based on user input
-// WHEN I click on an email address in the HTML
-// THEN my default email program opens and populates the TO field of the email with the address
-// WHEN I click on the GitHub username
-// THEN that GitHub profile opens in a new tab
-
-// WHEN I decide to finish building my team
-
-
-// to do
-// look for tests
-// look into what classes are
