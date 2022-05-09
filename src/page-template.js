@@ -35,9 +35,10 @@ module.exports = templateData => {
 
 
 const generateProfiles = profilesArr => {
+  console.log(profilesArr)
     return `
         ${profilesArr
-          .map(({ name, id, email, office, role }) => {
+          .map(({ name, id, email, office, role, github }) => {
             return `
             <div class="profile-card shadow-sm mb-4">
               <div class="profile-name-role p-3">
@@ -45,7 +46,9 @@ const generateProfiles = profilesArr => {
               </div>
               <div class="profile-other-info p-3">
                 <p class="bg-white p-2 border border-light">ID: ${id}</p>
-                <p class="bg-white p-2 border border-light">Email: ${email}</p>
+                <p class="bg-white p-2 border border-light"><a href = "mailto: ${email}">Email: ${email}</a></p>
+          
+                <p class="bg-white p-2 border border-light"><a href = "https://github.com/${github}">Github: ${github}</a></p>
                 <p class="bg-white p-2 border border-light">Office #: ${office}</p>
               </div>
             </div>

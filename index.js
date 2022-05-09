@@ -7,6 +7,51 @@ profilesData = [];
 const enterProfile = (value) => {
     console.log(value)
 
+    if (value == 'Engineer'){
+            return inquirer.prompt([{
+        name: 'name',
+        type: 'input',
+        message: `${value}'s name`,
+    }, {
+        name: 'id',
+        type: 'input',
+        message: `${value}'s employee ID`
+    }, {
+        name: 'email',
+        type: 'input',
+        message: `${value}'s email address`
+    }, {
+        name: 'github',
+        type: 'input',
+        message: `${value}'s github username`
+    },{
+        name: 'office',
+        type: 'input',
+        message: `${value}'s office number`
+    }, {
+        name: 'addProfileResponse',
+        type: 'list', 
+        message: "Would you like to add a profile for and engineer or intern?",
+        choices: ['Engineer', 'Intern', 'No, exit application'],
+    }])
+    .then((answers) => {
+        answers.role = value;
+        profilesData.push(answers)
+        //console.log(`\nMy age is ${answers.age} and I live in ${answers.country}.\n`);
+        if (answers.addProfileResponse === 'Engineer') {
+            console.log(`You've entered info for ${answers.name}. Now enter the next profile information.`)
+            return enterProfile('Engineer');
+        } else if (answers.addProfileResponse === 'Intern') {
+            console.log(`You've entered info for ${answers.name}. Now enter the next profile information.`)
+            return enterProfile('Intern');
+        } else {
+            console.log(`You've entered info for ${answers.name}.`)
+        }
+    })
+    
+
+    } else{
+
     return inquirer.prompt([{
         name: 'name',
         type: 'input',
@@ -27,7 +72,7 @@ const enterProfile = (value) => {
         name: 'addProfileResponse',
         type: 'list', 
         message: "Would you like to add a profile for and engineer or intern?",
-        choices: ['Engineer', 'Intern', 'no'],
+        choices: ['Engineer', 'Intern', 'No, exit application'],
     }])
     .then((answers) => {
         answers.role = value;
@@ -40,13 +85,12 @@ const enterProfile = (value) => {
             console.log(`You've entered info for ${answers.name}. Now enter the next profile information.`)
             return enterProfile('Intern');
         } else {
-         // end here
+            console.log(`You've entered info for ${answers.name}.`)
         }
     })
+    }
 }
 
-
-// Run function to prompt user for data and write readme file with inputted data
 enterProfile("Manager")
     .then(profilesData => {
     const pageHTML = generatePage(profilesData);
@@ -66,8 +110,9 @@ enterProfile("Manager")
 // WHEN I click on the GitHub username
 // THEN that GitHub profile opens in a new tab
 
-
-
 // WHEN I decide to finish building my team
-// THEN I exit the application, and the HTML is generated
 
+
+// to do
+// look for tests
+// look into what classes are
